@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "467430443422",
+    "project_id": "mobiledev-amal",
+    "storage_bucket": "mobiledev-amal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467430443422:android:e7546cab1ad85d36e1ee8f",
+        "android_client_info": {
+          "package_name": "com.example.mobiledev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgSu9Uaxn5Q5QXcJQdRuGwnnDzZdNwyBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
