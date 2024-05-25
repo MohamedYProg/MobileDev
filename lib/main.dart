@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/productListScreen.dart';
+import 'screens/loginScreen.dart';
 import '/screens/auth/signup_screen.dart';
 
 void main() async {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
             // User is logged in, redirect to product list
             return ProductListScreen();
           } else {
-            // User is not logged in, show login screen
+            // User is not logged in, show signup screen
             return SignupScreen(); // Use SignupScreen as home
           }
         },
