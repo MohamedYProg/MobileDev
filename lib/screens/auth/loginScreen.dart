@@ -85,57 +85,51 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Welcome Back',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Welcome Back',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
               ),
-              SizedBox(height: 32),
-              _buildTextField(
-                labelText: 'Email',
-                icon: Icons.email,
-                onSaved: (newValue) => _email = newValue,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email.';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              _buildTextField(
-                labelText: 'Password',
-                icon: Icons.lock,
-                obscureText: true,
-                onSaved: (newValue) => _password = newValue,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password.';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              _buildRoleDropdown(),
-              SizedBox(height: 32),
-              _buildLoginButton(),
-            ],
-          ),
+            ),
+            SizedBox(height: 32),
+            _buildTextField(
+              labelText: 'Email',
+              icon: Icons.email,
+              onSaved: (newValue) => _email = newValue,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email.';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16),
+            _buildTextField(
+              labelText: 'Password',
+              icon: Icons.lock,
+              obscureText: true,
+              onSaved: (newValue) => _password = newValue,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password.';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16),
+            _buildRoleDropdown(),
+            SizedBox(height: 32),
+            _buildLoginButton(),
+          ],
         ),
       ),
     );

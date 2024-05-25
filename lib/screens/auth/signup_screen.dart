@@ -18,52 +18,44 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Signup'),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: Container(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                SizedBox(height: 32),
-                _buildTextField(
-                  controller: _nameController,
-                  labelText: 'Name',
-                  icon: Icons.person,
-                ),
-                SizedBox(height: 16),
-                _buildTextField(
-                  controller: _emailController,
-                  labelText: 'Email',
-                  icon: Icons.email,
-                ),
-                SizedBox(height: 16),
-                _buildTextField(
-                  controller: _passwordController,
-                  labelText: 'Password',
-                  icon: Icons.lock,
-                  obscureText: true,
-                ),
-                SizedBox(height: 16),
-                _buildRoleDropdown(),
-                SizedBox(height: 32),
-                _buildSignupButton(context),
-              ],
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Create Account',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
-          ),
+            SizedBox(height: 32),
+            _buildTextField(
+              controller: _nameController,
+              labelText: 'Name',
+              icon: Icons.person,
+            ),
+            SizedBox(height: 16),
+            _buildTextField(
+              controller: _emailController,
+              labelText: 'Email',
+              icon: Icons.email,
+            ),
+            SizedBox(height: 16),
+            _buildTextField(
+              controller: _passwordController,
+              labelText: 'Password',
+              icon: Icons.lock,
+              obscureText: true,
+            ),
+            SizedBox(height: 16),
+            _buildRoleDropdown(),
+            SizedBox(height: 32),
+            _buildSignupButton(context),
+          ],
         ),
       ),
     );
@@ -132,30 +124,24 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
       onPressed: () async {
-        // Implement signup logic here
         String name = _nameController.text;
         String email = _emailController.text;
         String password = _passwordController.text;
         String role = _selectedRole;
-        // Use these values to create a new user with role
+
         try {
-          // Create a new user with email and password
           final userCredential = await _auth.createUserWithEmailAndPassword(
               email: email, password: password);
 
-          // Get the current user
           final user = userCredential.user!;
 
-          // Prepare user data for Firestore
           Map<String, dynamic> userData = {
             'name': name,
             'role': role,
           };
 
-          // Add user data to Firestore (using the user's uid as document ID)
           await _firestore.collection('users').doc(user.uid).set(userData);
 
-          // Show success message and navigate (consider using a snackbar)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Signup successful!'),
@@ -163,8 +149,8 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           );
 
-          // Navigate to a different screen (e.g., login screen or product list)
-          Navigator.pop(context); // Pop back to the previous screen
+          // Navigate to the main screen (you may need to adjust this based on your app's logic)
+          Navigator.pushReplacementNamed(context, '/productList');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             ScaffoldMessenger.of(context).showSnackBar(
