@@ -85,11 +85,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           Text(doc['description']),
                         ],
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          removeProduct(doc.id);
-                        },
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              removeProduct(doc.id);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add_shopping_cart),
+                            onPressed: () {
+                              addToCart(doc.id);
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -115,5 +126,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
         .collection('Product')
         .doc(productId)
         .delete();
+  }
+
+  Future<void> addToCart(String productId) async {
+    DocumentSnapshot productDoc = await FirebaseFirestore.instance
+        .collection('Product')
+        .doc(productId)
+        .get();
+
+    await FirebaseFirestore.instance.collection('Cart').add({
+      'productId': productId,
+      'productName': productDoc['name'],
+      'price': productDoc['price'],
+    });
   }
 }
