@@ -88,58 +88,122 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Email field
-              TextFormField(
-                key: const ValueKey('emailInput'),
-                decoration: const InputDecoration(labelText: 'Email'),
+              Text(
+                'Welcome Back',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              SizedBox(height: 32),
+              _buildTextField(
+                labelText: 'Email',
+                icon: Icons.email,
+                onSaved: (newValue) => _email = newValue,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email.';
                   }
                   return null;
                 },
-                onSaved: (newValue) => _email = newValue,
               ),
-
-              // Password field
-              TextFormField(
-                key: const ValueKey('passwordInput'),
-                decoration: const InputDecoration(labelText: 'Password'),
+              SizedBox(height: 16),
+              _buildTextField(
+                labelText: 'Password',
+                icon: Icons.lock,
                 obscureText: true,
+                onSaved: (newValue) => _password = newValue,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password.';
                   }
                   return null;
                 },
-                onSaved: (newValue) => _password = newValue,
               ),
-
-              // Role selection (optional)
-              DropdownButtonFormField<String>(
-                value: _role,
-                hint: const Text('Select Role'),
-                items: const [
-                  DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                  DropdownMenuItem(value: 'user', child: Text('User')),
-                ],
-                onChanged: (value) => setState(() => _role = value),
-              ),
-
-              ElevatedButton(
-                onPressed: _loginUser,
-                child: const Text('Login'),
-              ),
+              SizedBox(height: 16),
+              _buildRoleDropdown(),
+              SizedBox(height: 32),
+              _buildLoginButton(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String labelText,
+    required IconData icon,
+    bool obscureText = false,
+    required FormFieldSetter<String> onSaved,
+    required FormFieldValidator<String> validator,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+      ),
+      obscureText: obscureText,
+      onSaved: onSaved,
+      validator: validator,
+    );
+  }
+
+  Widget _buildRoleDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _role,
+      decoration: InputDecoration(
+        labelText: 'Role',
+        prefixIcon: Icon(Icons.person_outline, color: Colors.blueAccent),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+      ),
+      hint: const Text('Select Role'),
+      items: const [
+        DropdownMenuItem(value: 'admin', child: Text('Admin')),
+        DropdownMenuItem(value: 'user', child: Text('User')),
+      ],
+      onChanged: (value) => setState(() => _role = value),
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueAccent,
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      onPressed: _loginUser,
+      child: const Text(
+        'Login',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -10,6 +12,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'User'; // Default role
+
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -126,18 +131,68 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      onPressed: () {
+      onPressed: () async {
         // Implement signup logic here
         String name = _nameController.text;
         String email = _emailController.text;
         String password = _passwordController.text;
         String role = _selectedRole;
         // Use these values to create a new user with role
+        try {
+          // Create a new user with email and password
+          final userCredential = await _auth.createUserWithEmailAndPassword(
+              email: email, password: password);
 
-        print('Name: $name');
-        print('Email: $email');
-        print('Password: $password');
-        print('Role: $role');
+          // Get the current user
+          final user = userCredential.user!;
+
+          // Prepare user data for Firestore
+          Map<String, dynamic> userData = {
+            'name': name,
+            'role': role,
+          };
+
+          // Add user data to Firestore (using the user's uid as document ID)
+          await _firestore.collection('users').doc(user.uid).set(userData);
+
+          // Show success message and navigate (consider using a snackbar)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Signup successful!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Navigate to a different screen (e.g., login screen or product list)
+          Navigator.pop(context); // Pop back to the previous screen
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('The password provided is too weak.'),
+              ),
+            );
+          } else if (e.code == 'email-already-in-use') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'The email address is already in use by another account.'),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(e.message!),
+              ),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('An error occurred. Please try again later.'),
+            ),
+          );
+        }
       },
       child: Text(
         'Signup',

@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/productListScreen.dart';
-import 'screens/loginScreen.dart';
 import '/screens/auth/signup_screen.dart';
 
 void main() async {
@@ -33,46 +32,9 @@ class MyApp extends StatelessWidget {
             return ProductListScreen();
           } else {
             // User is not logged in, show login screen
-            return LoginPage();
+            return SignupScreen(); // Use SignupScreen as home
           }
         },
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProductListScreen()),
-                );
-              },
-              child: const Text('View Products'),
-            ),
-            SizedBox(height: 20), // Add some spacing between the buttons
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignupScreen()),
-                );
-              },
-              child: const Text('Sign Up'),
-            ),
-          ],
-        ),
       ),
     );
   }
