@@ -58,61 +58,61 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-void _loginUser() async {
-  final isValid = _formKey.currentState!.validate();
-  if (!isValid) {
-    return;
-  }
-
-  _formKey.currentState!.save();
-
-  try {
-    print('Attempting login with email: $_email and password: $_password');
-    final userCredential = await _auth.signInWithEmailAndPassword(
-      email: _email,
-      password: _password,
-    );
-
-    final user = userCredential.user!;
-    print('Login successful for user: ${user.uid}');
-    final userDoc = await _firestore.collection('users').doc(user.uid).get();
-
-    if (!userDoc.exists) {
-      print('User document does not exist, creating new document.');
-      await _firestore.collection('users').doc(user.uid).set({
-        'email': user.email,
-        'role': 'user',
-      });
+  void _loginUser() async {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return;
     }
 
-    Navigator.pushReplacementNamed(context, '/home');
-  } on FirebaseAuthException catch (e) {
-    print('FirebaseAuthException: ${e.code} - ${e.message}');
-    String errorMessage;
-    if (e.code == 'user-not-found') {
-      errorMessage = 'The email you entered is not registered.';
-    } else if (e.code == 'wrong-password') {
-      errorMessage = 'The password is invalid.';
-    } else {
-      errorMessage =
-          e.message ?? 'An error occurred. Please try again later.';
+    _formKey.currentState!.save();
+
+    try {
+      print('Attempting login with email: $_email and password: $_password');
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+
+      final user = userCredential.user!;
+      print('Login successful for user: ${user.uid}');
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        print('User document does not exist, creating new document.');
+        await _firestore.collection('users').doc(user.uid).set({
+          'email': user.email,
+          'role': 'user',
+        });
+      }
+
+      Navigator.pushReplacementNamed(context, '/home');
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'The email you entered is not registered.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'The password is invalid.';
+      } else {
+        errorMessage =
+            e.message ?? 'An error occurred. Please try again later.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      print('Exception: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ),
-    );
-  } catch (e) {
-    print('Exception: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('An error occurred. Please try again later.'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
 
   Widget _buildSignupButton() {
     return TextButton(

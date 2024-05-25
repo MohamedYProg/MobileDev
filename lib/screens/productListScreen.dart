@@ -147,13 +147,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             children: [
                               Text('\$${doc['price']}'),
                               Text(doc['description']),
+                              // Display reviews and rating (placeholders for now)
+                              Text('Reviews: ${doc['review']?.length ?? 0}'),
+                              Text('Rating: ${doc['rating'] ?? 0.0}'),
                             ],
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.redAccent),
+                                icon:
+                                    Icon(Icons.delete, color: Colors.redAccent),
                                 onPressed: () {
                                   removeProduct(doc.id);
                                 },
@@ -171,8 +175,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ProductScreen(productId: doc.id),
+                                builder: (context) => ProductScreen(
+                                  productId: doc.id,
+                                ),
                               ),
                             );
                           },
@@ -213,12 +218,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Future<void> addProduct(String name, double price, String description) async {
+  Future<void> addProduct(
+      String name, double price, String description, String imageUrl) async {
     try {
       await FirebaseFirestore.instance.collection('Product').add({
         'name': name,
         'price': price,
         'description': description,
+        'imageUrl': imageUrl,
+        'review': [], // Empty list for reviews
+        'rating': 0.0, // Initial rating as 0.0
+        'category': null, // Category set to null
+        'comments': [], // Empty list for comments
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Product added successfully')),
