@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/productListScreen.dart';
 import 'screens/loginScreen.dart';
-import '/screens/auth/signup_screen.dart';
+import 'screens/auth/signup_screen.dart'; // Import signup screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,47 +32,10 @@ class MyApp extends StatelessWidget {
             // User is logged in, redirect to product list
             return ProductListScreen();
           } else {
-            // User is not logged in, show login screen
-            return LoginPage();
+            // User is not logged in, show signup screen
+            return SignupScreen(); // Use SignupScreen as home
           }
         },
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProductListScreen()),
-                );
-              },
-              child: const Text('View Products'),
-            ),
-            SizedBox(height: 20), // Add some spacing between the buttons
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignupScreen()),
-                );
-              },
-              child: const Text('Sign Up'),
-            ),
-          ],
-        ),
       ),
     );
   }
