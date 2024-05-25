@@ -13,7 +13,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
   String? userRole;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -22,7 +24,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<void> _fetchUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = _auth.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -87,16 +89,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   maxLines: 3,
                 ),
                 SizedBox(height: 16),
+                _buildTextField(
+                  controller: _imageUrlController,
+                  labelText: 'Product Image URL',
+                  icon: Icons.image,
+                ),
+                SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     addProduct(
                       _nameController.text,
                       double.tryParse(_priceController.text) ?? 0.0,
                       _descriptionController.text,
+                      _imageUrlController.text,
+                      userid: _auth.currentUser!.uid,
                     );
                     _nameController.clear();
                     _priceController.clear();
                     _descriptionController.clear();
+                    _imageUrlController.clear();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
@@ -138,16 +149,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot doc = snapshot.data!.docs[index];
+                      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                       return Card(
                         elevation: 5,
                         margin: EdgeInsets.symmetric(vertical: 10),
                         child: ListTile(
-                          title: Text(doc['name']),
+                          title: Text(data['name'] ?? 'No Name'),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('\$${doc['price']}'),
-                              Text(doc['description']),
+                              Text('\$${data['price']?.toStringAsFixed(2) ?? '0.00'}'),
+                              Text(data['description'] ?? 'No Description'),
+                              Text('Reviews: ${data['review']?.length ?? 0}'),
+                              Text('Rating: ${data['rating']?.toStringAsFixed(1) ?? '0.0'}'),
                             ],
                           ),
                           trailing: Row(
@@ -217,12 +231,24 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Future<void> addProduct(String name, double price, String description) async {
+  Future<void> addProduct(
+    String name,
+    double price,
+    String description,
+    String imageUrl, {
+    required String userid,
+  }) async {
     try {
       await FirebaseFirestore.instance.collection('Product').add({
         'name': name,
         'price': price,
         'description': description,
+        'imageUrl': imageUrl,
+        'review': [], // Empty list for reviews
+        'rating': 0.0, // Initial rating as 0.0
+        'category': null, // Category set to null
+        'comments': [], // Empty list for comments
+        'userId': userid, // Set user ID
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Product added successfully')),
@@ -256,10 +282,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
           .collection('Product')
           .doc(productId)
           .get();
+      Map<String, dynamic> data = productDoc.data() as Map<String, dynamic>;
       await FirebaseFirestore.instance.collection('Cart').add({
         'productId': productId,
-        'productName': productDoc['name'],
-        'price': productDoc['price'],
+        'productName': data['name'],
+        'price': data['price'],
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Product added to cart')),
