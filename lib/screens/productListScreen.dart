@@ -12,6 +12,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +65,24 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 maxLines: 3,
               ),
               SizedBox(height: 16),
+              _buildTextField(
+                controller: _imageUrlController,
+                labelText: 'Product Image URL',
+                icon: Icons.image,
+              ),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   addProduct(
                     _nameController.text,
                     double.tryParse(_priceController.text) ?? 0.0,
                     _descriptionController.text,
+                    _imageUrlController.text,
                   );
                   _nameController.clear();
                   _priceController.clear();
                   _descriptionController.clear();
+                  _imageUrlController.clear();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
@@ -124,13 +133,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             children: [
                               Text('\$${doc['price']}'),
                               Text(doc['description']),
+                              // Display reviews and rating (placeholders for now)
+                              Text('Reviews: ${doc['review']?.length ?? 0}'),
+                              Text('Rating: ${doc['rating'] ?? 0.0}'),
                             ],
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.redAccent),
+                                icon:
+                                    Icon(Icons.delete, color: Colors.redAccent),
                                 onPressed: () {
                                   removeProduct(doc.id);
                                 },
@@ -148,8 +161,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ProductScreen(productId: doc.id),
+                                builder: (context) => ProductScreen(
+                                  productId: doc.id,
+                                ),
                               ),
                             );
                           },
@@ -190,12 +204,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Future<void> addProduct(String name, double price, String description) async {
+  Future<void> addProduct(
+      String name, double price, String description, String imageUrl) async {
     try {
       await FirebaseFirestore.instance.collection('Product').add({
         'name': name,
         'price': price,
         'description': description,
+        'imageUrl': imageUrl,
+        'review': [], // Empty list for reviews
+        'rating': 0.0, // Initial rating as 0.0
+        'category': null, // Category set to null
+        'comments': [], // Empty list for comments
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Product added successfully')),
