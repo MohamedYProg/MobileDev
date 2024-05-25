@@ -7,6 +7,7 @@ import 'screens/productListScreen.dart';
 import 'screens/auth/loginScreen.dart';
 import 'screens/auth/signup_screen.dart';
 import 'screens/profileScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,17 +59,14 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   bool _isLoggedIn = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  final List<Widget> _screens = [
-    ProductListScreen(),
-    CartScreen(),
-    ProfileScreen(),
-  ];
+  String? userRole;
+  List<Widget> _screens = [];
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
+    _fetchUserRole();
   }
 
   void _checkLoginStatus() async {
@@ -76,6 +74,35 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _isLoggedIn = user != null;
     });
+  }
+
+  Future<void> _fetchUserRole() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        userRole = userDoc['role'];
+        _initializeScreens();
+      });
+    }
+  }
+
+  void _initializeScreens() {
+    if (userRole == 'Admin') {
+      _screens = [
+        ProductListScreen(),
+        ProfileScreen(),
+      ];
+    } else {
+      _screens = [
+        ProductListScreen(),
+        CartScreen(),
+        ProfileScreen(),
+      ];
+    }
   }
 
   void onTabTapped(int index) {
@@ -88,7 +115,9 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _isLoggedIn
-          ? _screens[_currentIndex]
+          ? _screens.isEmpty
+              ? Center(child: CircularProgressIndicator())
+              : _screens[_currentIndex]
           : [
               ProductListScreen(),
               LoginPage(),
@@ -103,20 +132,31 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: Colors.black87,
         unselectedItemColor: Colors.black87,
         items: _isLoggedIn
-            ? [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Products',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.shopping_cart),
-                  label: 'Cart',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ]
+            ? (userRole == 'Admin'
+                ? [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Products',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ]
+                : [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Products',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.shopping_cart),
+                      label: 'Cart',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ])
             : [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),

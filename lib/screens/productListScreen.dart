@@ -41,15 +41,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
         title: Text('Product List'),
         backgroundColor: Colors.blueAccent,
         actions: [
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartScreen()),
-              );
-            },
-          ),
+          if (userRole != 'Admin')
+            IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CartScreen()),
+                );
+              },
+            ),
         ],
       ),
       body: SingleChildScrollView(
