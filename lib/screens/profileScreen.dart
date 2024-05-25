@@ -20,12 +20,23 @@ class ProfileScreen extends StatelessWidget {
     return 'No user logged in';
   }
 
+  void _logout(BuildContext context) async {
+    await _auth.signOut();
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
         backgroundColor: Colors.blueAccent,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () => _logout(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(

@@ -164,10 +164,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                  'Signup successful! A verification email has been sent to $email.'),
-              backgroundColor: Colors.green,
-            ),
+                content: Text(
+                    'Signup successful! A verification email has been sent to $email.'),
+                backgroundColor: Colors.green),
           );
 
           // Navigate to the main screen (you may need to adjust this based on your app's logic)
@@ -178,25 +177,19 @@ class _SignupScreenState extends State<SignupScreen> {
           if (e.code == 'weak-password') {
             errorMessage = 'The password provided is too weak.';
           } else if (e.code == 'email-already-in-use') {
-            errorMessage =
-                'The email address is already in use by another account.';
+            errorMessage = 'The email address is already in use by another account.';
           } else {
-            errorMessage =
-                e.message ?? 'An error occurred. Please try again later.';
+            errorMessage = e.message ?? 'An error occurred. Please try again later.';
           }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );
         } catch (e) {
           print('Exception: $e');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('An error occurred. Please try again later.'),
-              backgroundColor: Colors.red,
-            ),
+                content: Text('An error occurred. Please try again later.'),
+                backgroundColor: Colors.red),
           );
         }
       },

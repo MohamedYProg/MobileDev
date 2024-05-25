@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'product_screen.dart';
 import 'cart_screen.dart';
 
@@ -12,6 +13,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  String? userRole;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserRole();
+  }
+
+  Future<void> _fetchUserRole() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        userRole = userDoc['role'];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,58 +57,60 @@ class _ProductListScreenState extends State<ProductListScreen> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              Text(
-                'Add a New Product',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              SizedBox(height: 16),
-              _buildTextField(
-                controller: _nameController,
-                labelText: 'Product Name',
-                icon: Icons.label,
-              ),
-              SizedBox(height: 16),
-              _buildTextField(
-                controller: _priceController,
-                labelText: 'Product Price',
-                icon: Icons.attach_money,
-              ),
-              SizedBox(height: 16),
-              _buildTextField(
-                controller: _descriptionController,
-                labelText: 'Product Description',
-                icon: Icons.description,
-                maxLines: 3,
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  addProduct(
-                    _nameController.text,
-                    double.tryParse(_priceController.text) ?? 0.0,
-                    _descriptionController.text,
-                  );
-                  _nameController.clear();
-                  _priceController.clear();
-                  _descriptionController.clear();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              if (userRole == 'Admin') ...[
+                Text(
+                  'Add a New Product',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
                   ),
                 ),
-                child: Text(
-                  'Add Product',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                SizedBox(height: 16),
+                _buildTextField(
+                  controller: _nameController,
+                  labelText: 'Product Name',
+                  icon: Icons.label,
                 ),
-              ),
-              SizedBox(height: 32),
+                SizedBox(height: 16),
+                _buildTextField(
+                  controller: _priceController,
+                  labelText: 'Product Price',
+                  icon: Icons.attach_money,
+                ),
+                SizedBox(height: 16),
+                _buildTextField(
+                  controller: _descriptionController,
+                  labelText: 'Product Description',
+                  icon: Icons.description,
+                  maxLines: 3,
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    addProduct(
+                      _nameController.text,
+                      double.tryParse(_priceController.text) ?? 0.0,
+                      _descriptionController.text,
+                    );
+                    _nameController.clear();
+                    _priceController.clear();
+                    _descriptionController.clear();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Add Product',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(height: 32),
+              ],
               Text(
                 'Product List',
                 style: TextStyle(
