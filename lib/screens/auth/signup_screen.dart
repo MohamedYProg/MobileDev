@@ -170,16 +170,18 @@ class _SignupScreenState extends State<SignupScreen> {
           );
 
           // Navigate to the main screen (you may need to adjust this based on your app's logic)
-          Navigator.pushReplacementNamed(context, '/main');
+          Navigator.pushReplacementNamed(context, '/login');
         } on FirebaseAuthException catch (e) {
           print('FirebaseAuthException: ${e.code} - ${e.message}');
           String errorMessage;
           if (e.code == 'weak-password') {
             errorMessage = 'The password provided is too weak.';
           } else if (e.code == 'email-already-in-use') {
-            errorMessage = 'The email address is already in use by another account.';
+            errorMessage =
+                'The email address is already in use by another account.';
           } else {
-            errorMessage = e.message ?? 'An error occurred. Please try again later.';
+            errorMessage =
+                e.message ?? 'An error occurred. Please try again later.';
           }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
