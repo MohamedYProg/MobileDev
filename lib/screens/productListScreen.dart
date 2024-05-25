@@ -149,52 +149,80 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot doc = snapshot.data!.docs[index];
-                      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                      return Card(
-                        elevation: 5,
-                        margin: EdgeInsets.symmetric(vertical: 10),
-                        child: ListTile(
-                          title: Text(data['name'] ?? 'No Name'),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('\$${data['price']?.toStringAsFixed(2) ?? '0.00'}'),
-                              Text(data['description'] ?? 'No Description'),
-                              Text('Reviews: ${data['review']?.length ?? 0}'),
-                              Text('Rating: ${data['rating']?.toStringAsFixed(1) ?? '0.0'}'),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (userRole == 'Admin') ...[
-                                IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.redAccent),
-                                  onPressed: () {
-                                    removeProduct(doc.id);
-                                  },
-                                ),
-                              ],
-                              if (userRole == 'User') ...[
-                                IconButton(
-                                  icon: Icon(Icons.add_shopping_cart, color: Colors.green),
-                                  onPressed: () {
-                                    addToCart(doc.id);
-                                  },
-                                ),
-                              ],
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ProductScreen(productId: doc.id),
+                      Map<String, dynamic> data =
+                          doc.data() as Map<String, dynamic>;
+
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('Product')
+                            .doc(doc.id)
+                            .collection('reviews')
+                            .snapshots(),
+                        builder: (context, reviewSnapshot) {
+                          if (!reviewSnapshot.hasData) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          final reviews = reviewSnapshot.data!.docs;
+                          double totalRating = 0;
+                          for (var review in reviews) {
+                            totalRating += review['rating'];
+                          }
+                          double avgRating = reviews.isNotEmpty
+                              ? totalRating / reviews.length
+                              : 0;
+
+                          return Card(
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            child: ListTile(
+                              title: Text(data['name'] ?? 'No Name'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      '\$${data['price']?.toStringAsFixed(2) ?? '0.00'}'),
+                                  Text(data['description'] ?? 'No Description'),
+                                  Text('Reviews: ${reviews.length}'),
+                                  Text(
+                                      'Rating: ${avgRating.toStringAsFixed(1)}'),
+                                ],
                               ),
-                            );
-                          },
-                        ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (userRole == 'Admin') ...[
+                                    IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color: Colors.redAccent),
+                                      onPressed: () {
+                                        removeProduct(doc.id);
+                                      },
+                                    ),
+                                  ],
+                                  if (userRole == 'User') ...[
+                                    IconButton(
+                                      icon: Icon(Icons.add_shopping_cart,
+                                          color: Colors.green),
+                                      onPressed: () {
+                                        addToCart(doc.id);
+                                      },
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProductScreen(productId: doc.id),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       );
                     },
                   );
