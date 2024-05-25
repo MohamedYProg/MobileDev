@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => ProductListScreen()),
             );
           },
-          child: Text('View Products'),
+          child: const Text('View Products'),
         ),
       ),
     );
@@ -52,7 +52,7 @@ class ProductListScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Product List'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('No products available.'),
       ),
     );
