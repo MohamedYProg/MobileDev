@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/cart_screen.dart';
-import 'screens/cart_screen.dart';
 import 'screens/productListScreen.dart';
 import 'screens/auth/loginScreen.dart';
 import 'screens/auth/signup_screen.dart';
@@ -64,7 +63,6 @@ class _MainScreenState extends State<MainScreen> {
     SignupScreen(),
     CartScreen(),
     ProfileScreen(),
-
   ];
 
   void onTabTapped(int index) {
