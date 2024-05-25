@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -163,7 +161,7 @@ class _SignupScreenState extends State<SignupScreen> {
           );
 
           // Navigate to the main screen (you may need to adjust this based on your app's logic)
-          Navigator.pushReplacementNamed(context, '/productList');
+          Navigator.pushReplacementNamed(context, '/main');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             ScaffoldMessenger.of(context).showSnackBar(
