@@ -152,19 +152,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.redAccent),
-                                onPressed: () {
-                                  removeProduct(doc.id);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.add_shopping_cart,
-                                    color: Colors.green),
-                                onPressed: () {
-                                  addToCart(doc.id);
-                                },
-                              ),
+                              if (userRole == 'Admin') ...[
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.redAccent),
+                                  onPressed: () {
+                                    removeProduct(doc.id);
+                                  },
+                                ),
+                              ],
+                              if (userRole == 'User') ...[
+                                IconButton(
+                                  icon: Icon(Icons.add_shopping_cart, color: Colors.green),
+                                  onPressed: () {
+                                    addToCart(doc.id);
+                                  },
+                                ),
+                              ],
                             ],
                           ),
                           onTap: () {
