@@ -26,18 +26,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: StreamBuilder<User?>(
-        stream: _auth.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            // User is logged in, redirect to main screen with bottom navigation
-            return MainScreen();
-          } else {
-            // User is not logged in, show signup screen
-            return MainScreen(); // Use MainScreen with SignupScreen as default
-          }
-        },
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => StreamBuilder<User?>(
+              stream: _auth.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return MainScreen();
+                } else {
+                  return LoginPage();
+                }
+              },
+            ),
+        '/home': (context) => MainScreen(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignupScreen(),
+        '/productList': (context) => ProductListScreen(),
+        '/cart': (context) => CartScreen(),
+      },
     );
   }
 }
