@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
+import 'screens/cart_screen.dart';
 import 'screens/productListScreen.dart';
 import 'screens/auth/loginScreen.dart';
 import 'screens/auth/signup_screen.dart';
@@ -53,6 +54,7 @@ class _MainScreenState extends State<MainScreen> {
     ProductListScreen(),
     LoginPage(),
     SignupScreen(),
+    CartScreen(),
   ];
 
   void onTabTapped(int index) {
@@ -68,6 +70,9 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
         currentIndex: _currentIndex,
+        backgroundColor: Colors.blueAccent, // Set background color
+        selectedItemColor: Colors.black87, // Set color for selected item
+        unselectedItemColor: Colors.black87, // Set color for unselected items
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -80,6 +85,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person_add),
             label: 'Signup',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
           ),
         ],
       ),
