@@ -20,44 +20,52 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Create Account',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Signup'),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Container(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                SizedBox(height: 32),
+                _buildTextField(
+                  controller: _nameController,
+                  labelText: 'Name',
+                  icon: Icons.person,
+                ),
+                SizedBox(height: 16),
+                _buildTextField(
+                  controller: _emailController,
+                  labelText: 'Email',
+                  icon: Icons.email,
+                ),
+                SizedBox(height: 16),
+                _buildTextField(
+                  controller: _passwordController,
+                  labelText: 'Password',
+                  icon: Icons.lock,
+                  obscureText: true,
+                ),
+                SizedBox(height: 16),
+                _buildRoleDropdown(),
+                SizedBox(height: 32),
+                _buildSignupButton(context),
+              ],
             ),
-            SizedBox(height: 32),
-            _buildTextField(
-              controller: _nameController,
-              labelText: 'Name',
-              icon: Icons.person,
-            ),
-            SizedBox(height: 16),
-            _buildTextField(
-              controller: _emailController,
-              labelText: 'Email',
-              icon: Icons.email,
-            ),
-            SizedBox(height: 16),
-            _buildTextField(
-              controller: _passwordController,
-              labelText: 'Password',
-              icon: Icons.lock,
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
-            _buildRoleDropdown(),
-            SizedBox(height: 32),
-            _buildSignupButton(context),
-          ],
+          ),
         ),
       ),
     );
@@ -137,9 +145,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
           final user = userCredential.user!;
 
+          // Prepare user data including email and uid
           Map<String, dynamic> userData = {
             'name': name,
+            'email': email, // Add email to user data
             'role': role,
+            'uid': user.uid, // Add uid to user data
           };
 
           await _firestore.collection('users').doc(user.uid).set(userData);
