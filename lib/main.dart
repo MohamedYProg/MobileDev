@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/cart_screen.dart';
+import 'screens/cart_screen.dart';
 import 'screens/productListScreen.dart';
 import 'screens/auth/loginScreen.dart';
 import 'screens/auth/signup_screen.dart';
@@ -28,24 +29,23 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
-routes: {
-  '/': (context) => StreamBuilder<User?>(
-        stream: _auth.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return MainScreen();
-          } else {
-            return LoginPage();
-          }
-        },
-      ),
-  '/home': (context) => MainScreen(),
-  '/login': (context) => LoginPage(),
-  '/signup': (context) => SignupScreen(),
-  '/productList': (context) => ProductListScreen(),
-  '/cart': (context) => CartScreen(),
-},
-
+      routes: {
+        '/': (context) => StreamBuilder<User?>(
+              stream: _auth.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return MainScreen();
+                } else {
+                  return LoginPage();
+                }
+              },
+            ),
+        '/home': (context) => MainScreen(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignupScreen(),
+        '/productList': (context) => ProductListScreen(),
+        '/cart': (context) => CartScreen(),
+      },
     );
   }
 }

@@ -137,11 +137,15 @@ class _SignupScreenState extends State<SignupScreen> {
         String password = _passwordController.text;
         String role = _selectedRole;
 
+        print('Starting signup process...');
+        print('Name: $name, Email: $email, Role: $role');
+
         try {
           final userCredential = await _auth.createUserWithEmailAndPassword(
               email: email, password: password);
 
           final user = userCredential.user!;
+          print('User created: ${user.uid}');
 
           // Prepare user data including email and uid
           Map<String, dynamic> userData = {
@@ -152,10 +156,16 @@ class _SignupScreenState extends State<SignupScreen> {
           };
 
           await _firestore.collection('users').doc(user.uid).set(userData);
+          print('User data saved to Firestore.');
+
+          // Send email verification
+          await user.sendEmailVerification();
+          print('Verification email sent.');
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Signup successful!'),
+              content: Text(
+                  'Signup successful! A verification email has been sent to $email.'),
               backgroundColor: Colors.green,
             ),
           );
@@ -163,30 +173,29 @@ class _SignupScreenState extends State<SignupScreen> {
           // Navigate to the main screen (you may need to adjust this based on your app's logic)
           Navigator.pushReplacementNamed(context, '/main');
         } on FirebaseAuthException catch (e) {
+          print('FirebaseAuthException: ${e.code} - ${e.message}');
+          String errorMessage;
           if (e.code == 'weak-password') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('The password provided is too weak.'),
-              ),
-            );
+            errorMessage = 'The password provided is too weak.';
           } else if (e.code == 'email-already-in-use') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                    'The email address is already in use by another account.'),
-              ),
-            );
+            errorMessage =
+                'The email address is already in use by another account.';
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(e.message!),
-              ),
-            );
+            errorMessage =
+                e.message ?? 'An error occurred. Please try again later.';
           }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
         } catch (e) {
+          print('Exception: $e');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('An error occurred. Please try again later.'),
+              backgroundColor: Colors.red,
             ),
           );
         }
