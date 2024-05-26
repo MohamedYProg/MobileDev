@@ -17,6 +17,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
   String? userRole;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  final List<String> _categories = [
+    "Sanitation",
+    "Toys",
+    "Clothes",
+    "Food",
+    "Skin Care"
+  ];
+  String selectedCategory = 'Sanitation';
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +104,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   icon: Icons.image,
                 ),
                 SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  decoration: InputDecoration(
+                    labelText: 'Category',
+                    prefixIcon: Icon(Icons.category, color: Colors.blueAccent),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blueAccent),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blueAccent),
+                    ),
+                  ),
+                  items: _categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCategory = newValue!;
+                    });
+                  },
+                ),
+                SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     addProduct(
@@ -102,6 +138,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       double.tryParse(_priceController.text) ?? 0.0,
                       _descriptionController.text,
                       _imageUrlController.text,
+                      selectedCategory,
                       userid: _auth.currentUser!.uid,
                     );
                     _nameController.clear();
@@ -263,7 +300,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
     String name,
     double price,
     String description,
-    String imageUrl, {
+    String imageUrl,
+    String selectedCategory, {
     required String userid,
   }) async {
     try {

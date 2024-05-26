@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProductScreen extends StatelessWidget {
   final String productId;
@@ -8,6 +9,18 @@ class ProductScreen extends StatelessWidget {
 
   final TextEditingController _reviewController = TextEditingController();
   final TextEditingController _ratingController = TextEditingController();
+
+  Future<String?> _getUserRole() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      return userDoc['role'];
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,47 +48,54 @@ class ProductScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //here
                 if (productData.containsKey('imageUrl') &&
                     productData['imageUrl'] != null)
-                  Image.network(
-                    productData['imageUrl'],
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (BuildContext context, Object exception,
-                        StackTrace? stackTrace) {
-                      return Text('Error loading image');
-                    },
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        productData['imageUrl'],
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return Text('Error loading image');
+                        },
+                      ),
+                    ),
                   ),
                 SizedBox(height: 16),
-                //end
-                Text(
-                  productData['name'],
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+                Center(
+                  child: Text(
+                    productData['name'],
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
-                Text(
-                  '\$${productData['price']}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.blueAccent,
+                Center(
+                  child: Text(
+                    '\$${productData['price']}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.blueAccent,
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -86,9 +106,28 @@ class ProductScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _showReviewDialog(context),
-                  child: Text('Add Review'),
+                FutureBuilder<String?>(
+                  future: _getUserRole(),
+                  builder: (context, roleSnapshot) {
+                    if (!roleSnapshot.hasData || roleSnapshot.data == 'Admin') {
+                      return Container(); // Do not show review button
+                    } else {
+                      return Center(
+                        child: ElevatedButton(
+                          onPressed: () => _showReviewDialog(context),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Colors.blueAccent,
+                          ),
+                          child: Text('Add Review'),
+                        ),
+                      );
+                    }
+                  },
                 ),
                 SizedBox(height: 16),
                 StreamBuilder<QuerySnapshot>(
@@ -206,5 +245,9 @@ class ProductScreen extends StatelessWidget {
     Navigator.of(context).pop();
     _ratingController.clear();
     _reviewController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Review submitted successfully')),
+    );
   }
 }
