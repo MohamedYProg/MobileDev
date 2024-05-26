@@ -43,7 +43,7 @@ class ProductScreen extends StatelessWidget {
 
           var productData = snapshot.data!.data() as Map<String, dynamic>;
 
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,10 +99,22 @@ class ProductScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    productData['category'],
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
                 Text(
                   productData['description'],
                   style: TextStyle(
                     fontSize: 16,
+                    height: 1.5,
                   ),
                 ),
                 SizedBox(height: 16),
@@ -170,9 +182,12 @@ class ProductScreen extends StatelessWidget {
                           ),
                         ),
                         ...reviews.map((review) {
-                          return ListTile(
-                            title: Text('Rating: ${review['rating']}'),
-                            subtitle: Text(review['comment']),
+                          return Card(
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            child: ListTile(
+                              title: Text('Rating: ${review['rating']}'),
+                              subtitle: Text(review['comment']),
+                            ),
                           );
                         }).toList(),
                       ],
@@ -198,12 +213,19 @@ class ProductScreen extends StatelessWidget {
             children: [
               TextField(
                 controller: _ratingController,
-                decoration: InputDecoration(labelText: 'Rating (out of 5)'),
+                decoration: InputDecoration(
+                  labelText: 'Rating (out of 5)',
+                  border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.number,
               ),
+              SizedBox(height: 10),
               TextField(
                 controller: _reviewController,
-                decoration: InputDecoration(labelText: 'Comment'),
+                decoration: InputDecoration(
+                  labelText: 'Comment',
+                  border: OutlineInputBorder(),
+                ),
               ),
             ],
           ),

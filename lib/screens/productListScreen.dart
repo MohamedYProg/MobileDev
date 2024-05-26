@@ -314,7 +314,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         'imageUrl': imageUrl,
         'review': [], // Empty list for reviews
         'rating': 0.0, // Initial rating as 0.0
-        'category': null, // Category set to null
+        'category': selectedCategory, // Category set to null
         'comments': [], // Empty list for comments
         'userId': userid, // Set user ID
       });

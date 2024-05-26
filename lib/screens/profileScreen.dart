@@ -56,7 +56,8 @@ class ProfileScreen extends StatelessWidget {
                     leading: Icon(Icons.email),
                     title: Text(
                       'Email',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       '${snapshot.data}',

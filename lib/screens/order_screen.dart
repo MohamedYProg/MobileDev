@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobiledev/screens/productListScreen.dart';
 
 class OrderScreen extends StatefulWidget {
   final double totalPrice;
@@ -26,8 +27,23 @@ class _OrderScreenState extends State<OrderScreen> {
 
       try {
         await FirebaseFirestore.instance.collection('orders').add(orderData);
+
+        // Clear the entire cart collection
+        QuerySnapshot cartItems =
+            await FirebaseFirestore.instance.collection('Cart').get();
+        for (DocumentSnapshot doc in cartItems.docs) {
+          await doc.reference.delete();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Order placed successfully')),
+        );
+
+        // Redirect to product list page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => ProductListScreen()),
+          (route) => false,
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
