@@ -17,6 +17,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   String? userRole;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  //Esht5l ya rambo ya 3gl
+
   final List<String> _categories = [
     "Sanitation",
     "Toys",
